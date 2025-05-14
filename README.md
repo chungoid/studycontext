@@ -26,7 +26,7 @@ This is a command-line interface (CLI) tool that processes lecture transcripts t
 1.  **Clone the Repository (if applicable)**
     If you've cloned this project from a Git repository, navigate to the project directory:
     ```bash
-    git clone <repository_url>
+    git clone https://github.com/chungoid/studycontext.git
     cd studycontext
     ```
     If you have the files locally, ensure you are in the root directory of the project (`studycontext`).
