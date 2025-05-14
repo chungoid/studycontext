@@ -112,13 +112,18 @@ def call_llm(
 
             # Basic token usage logging (as per plan step 4d - console for now)
             # More detailed logging (to DB or structured logs) would be for a later phase.
-            prompt_tokens = response.usage.prompt_tokens
-            completion_tokens = response.usage.completion_tokens
-            total_tokens = response.usage.total_tokens
-            logger.info(
-                f"LLM call successful. Model: {model}, Prompt Tokens: {prompt_tokens}, "
-                f"Completion Tokens: {completion_tokens}, Total Tokens: {total_tokens}"
-            )
+            if response.usage is not None:
+                prompt_tokens = response.usage.prompt_tokens
+                completion_tokens = response.usage.completion_tokens
+                total_tokens = response.usage.total_tokens
+                logger.info(
+                    f"LLM call successful. Model: {model}, Prompt Tokens: {prompt_tokens}, "
+                    f"Completion Tokens: {completion_tokens}, Total Tokens: {total_tokens}"
+                )
+            else:
+                logger.info(
+                    f"LLM call successful. Model: {model}. Usage data not available in response."
+                )
 
             if content is None:
                 logger.warning("LLM response content is None.")
