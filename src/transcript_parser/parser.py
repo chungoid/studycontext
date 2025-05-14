@@ -3,6 +3,7 @@ import re
 
 logger = logging.getLogger(__name__)
 
+
 def read_transcript_file(file_path: str) -> str:
     """
     Reads the content of the transcript file.
@@ -19,9 +20,11 @@ def read_transcript_file(file_path: str) -> str:
     """
     logger.info(f"Attempting to read transcript file: {file_path}")
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
-        logger.info(f"Successfully read file: {file_path}. Length: {len(content)} characters.")
+        logger.info(
+            f"Successfully read file: {file_path}. Length: {len(content)} characters."
+        )
         return content
     except FileNotFoundError:
         logger.error(f"File not found: {file_path}")
@@ -29,6 +32,7 @@ def read_transcript_file(file_path: str) -> str:
     except IOError as e:
         logger.error(f"Error reading file {file_path}: {e}")
         raise
+
 
 def clean_transcript_text(text: str) -> str:
     """
@@ -58,6 +62,7 @@ def clean_transcript_text(text: str) -> str:
     logger.info(f"Cleaning complete. Cleaned length: {len(cleaned_text)}")
     return cleaned_text
 
+
 def segment_text_by_word_count(text: str, words_per_segment: int = 500) -> list[str]:
     """
     Segments the text into chunks, each containing approximately words_per_segment words.
@@ -69,7 +74,9 @@ def segment_text_by_word_count(text: str, words_per_segment: int = 500) -> list[
     Returns:
         A list of text segments.
     """
-    logger.info(f"Starting text segmentation. Total words: {len(text.split())}, Words per segment: {words_per_segment}")
+    logger.info(
+        f"Starting text segmentation. Total words: {len(text.split())}, Words per segment: {words_per_segment}"
+    )
     if not text:
         logger.warning("Input text for segmentation is empty. Returning empty list.")
         return []
@@ -87,6 +94,6 @@ def segment_text_by_word_count(text: str, words_per_segment: int = 500) -> list[
     # Add any remaining words as the last segment
     if current_segment_words:
         segments.append(" ".join(current_segment_words))
-    
+
     logger.info(f"Segmentation complete. Number of segments: {len(segments)}")
-    return segments 
+    return segments
