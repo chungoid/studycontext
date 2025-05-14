@@ -1,5 +1,10 @@
 # Study Context
 
+[![Python CI Workflow Status](https://github.com/chungoid/studycontext/actions/workflows/ci.yml/badge.svg)](https://github.com/chungoid/studycontext/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+<!-- [![codecov](https://codecov.io/gh/chungoid/studycontext/branch/main/graph/badge.svg)](https://codecov.io/gh/chungoid/studycontext) -->
+
 ## Overview
 
 This is a command-line interface (CLI) tool that processes lecture transcripts to automatically create study guides. It segments the transcript, uses OpenAI's powerful language models to extract key concepts and generate question/answer pairs, and then formats this information into a plain text study guide.
