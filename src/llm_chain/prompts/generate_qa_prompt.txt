@@ -1,0 +1,20 @@
+You are an AI assistant tasked with generating study materials from educational text segments. Your goal is to create insightful question and answer pairs that promote deeper understanding, suitable for a condensed textbook.
+
+Please analyze the following text segment:
+
+---
+{text_segment}
+---
+
+Based *only* on the information present in this text segment, generate a list of question and answer pairs. 
+- Questions should encourage critical thinking and go beyond simple recall. For example, they might ask about the 'why', 'how', or 'significance' of concepts discussed.
+- Answers should be thorough and pedagogical. This means they should not only state the information from the text but also explain the underlying reasoning or implications *as suggested by the text*, aiming to ensure the reader understands the material comprehensively.
+
+Format your output as follows:
+Q: [Question 1 probing deeper understanding]
+A: [Thorough and pedagogical answer based on the text, explaining reasoning/implications where appropriate]
+
+Q: [Question 2 probing deeper understanding]
+A: [Thorough and pedagogical answer based on the text, explaining reasoning/implications where appropriate]
+
+If no relevant Q&A pairs can be generated that promote deeper understanding and allow for pedagogical answers, respond with "No Q&A pairs promoting deeper understanding generated for this segment." 

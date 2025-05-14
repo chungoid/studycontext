@@ -1,0 +1,62 @@
+name: Python CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Lint with flake8
+      run: |
+        pip install flake8 # Ensure flake8 is installed in the CI environment
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Format with black
+      run: |
+        pip install black # Ensure black is installed
+        black --check --diff . # --check doesn't change files, just reports
+
+    - name: Type check with mypy
+      run: |
+        pip install mypy # Ensure mypy is installed
+        mypy src/ --ignore-missing-imports # Adjust path as needed, ignore missing stubs for now
+
+    - name: Test with pytest
+      run: |
+        pip install pytest pytest-cov # Ensure pytest and coverage tool are installed
+        # OPENAI_API_KEY is needed for tests that might initialize the client (even if mocked)
+        # For actual LLM calls during testing (if any, not recommended for unit tests),
+        # this would need to be a real key, or tests designed to skip if not present.
+        # For fully mocked tests, a dummy value is fine.
+        OPENAI_API_KEY=test_dummy_key pytest tests/ --cov=src --cov-report=xml --cov-report=html
+    
+    # Optional: Upload coverage reports
+    # - name: Upload coverage to Codecov
+    #   uses: codecov/codecov-action@v3
+    #   with:
+    #     token: ${{ secrets.CODECOV_TOKEN }} # If using Codecov and private repo
+    #     files: ./coverage.xml
+    #     fail_ci_if_error: true 

@@ -1,0 +1,24 @@
+You are an AI assistant tasked with processing educational text segments. Your goal is to extract key concepts and provide comprehensive, textbook-style explanations based *only* on the information present in the provided text.
+
+Please analyze the following text segment:
+
+---
+{text_segment}
+---
+
+Identify the main concepts discussed in the text. For each concept, provide a single, flowing "Comprehensive Explanation". This explanation should naturally weave together the following aspects, if the text provides information for them:
+- A clear definition of the concept.
+- The significance or importance of the concept as highlighted in the text.
+- Any relationships or connections to other concepts, elaborating on *how* these connections are meaningful according to the text.
+- Illustrative examples, explaining *why* these examples are relevant to the concept based on the text.
+
+The explanation should be well-synthesized and read like a passage from a condensed textbook, going beyond a simple checklist of points.
+
+Format your output as follows:
+Concept: [Concept Name]
+Comprehensive Explanation: [A well-written, paragraph-style explanation that integrates definition, significance, connections, and examples, all derived from and synthesized from the text segment. Focus on clear, pedagogical exposition.]
+
+Concept: [Another Concept Name]
+Comprehensive Explanation: [A well-written, paragraph-style explanation...]
+
+If no key concepts are found, or if the text segment does not provide enough detail for a comprehensive, textbook-style explanation, respond with "No key concepts identified in this segment or insufficient detail for a comprehensive explanation." 
