@@ -132,9 +132,9 @@ def test_call_llm_retry_on_ratelimiterror_then_success(mock_openai_client, monke
             response=MagicMock(
                 spec=httpx.Response,
                 status_code=429,
-                headers=MagicMock(spec=httpx.Headers)
+                headers=MagicMock(spec=httpx.Headers),
             ),
-            body=None
+            body=None,
         ),
         create_mock_chat_completion_response(mock_response_content),
     ]

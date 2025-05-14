@@ -74,7 +74,7 @@ def clean_transcript_text(text: str) -> str:
 
     # Collapse multiple commas (e.g., ", , ," or ", ,") into a single comma followed by a space
     cleaned_text = re.sub(r"(,\s*)+", ", ", cleaned_text)
-    
+
     # Collapse multiple periods if they are not part of an ellipsis
     # e.g. "word. . another" -> "word. another"
     # This is a bit more complex; for now, we assume ellipsis handling is primary.
@@ -92,16 +92,16 @@ def clean_transcript_text(text: str) -> str:
     # This is based on "UM, So, LIKE... very loud fillers!" -> "very loud fillers!" test
     if cleaned_text.startswith("... "):
         cleaned_text = cleaned_text[4:]
-    elif cleaned_text.startswith("..."): # If no space after leading "..."
+    elif cleaned_text.startswith("..."):  # If no space after leading "..."
         cleaned_text = cleaned_text[3:].strip()
 
     # Remove trailing comma
     if cleaned_text.endswith(","):
         cleaned_text = cleaned_text[:-1].strip()
-    
+
     # Remove trailing ellipsis if it is left hanging (e.g. "text ...")
     if cleaned_text.endswith(" ..."):
-        cleaned_text = cleaned_text[:-4].strip() # Remove " ..."
+        cleaned_text = cleaned_text[:-4].strip()  # Remove " ..."
     elif cleaned_text.endswith("..."):
         cleaned_text = cleaned_text[:-3].strip()
 
