@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 import os
 from src.llm_chain import chain # Use this to allow monkeypatching chain._openai_client
 from openai import APIError, RateLimitError
+import time # Import the time module
 
 # Fixture to set and unset the API key for tests
 @pytest.fixture(autouse=True)

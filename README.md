@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Study Guide Generator is a command-line interface (CLI) tool that processes lecture transcripts to automatically create study guides. It segments the transcript, uses OpenAI's powerful language models to extract key concepts and generate question/answer pairs, and then formats this information into a plain text study guide.
+This is a command-line interface (CLI) tool that processes lecture transcripts to automatically create study guides. It segments the transcript, uses OpenAI's powerful language models to extract key concepts and generate question/answer pairs, and then formats this information into a plain text study guide.
 
 ## Features
 
@@ -143,8 +143,40 @@ If an output file is specified, the guide will be saved there. Otherwise, it wil
 
 ## Contributing
 
-(Placeholder for contribution guidelines if this were an open-source project)
+We welcome contributions to the Study Guide Generator! If you'd like to contribute, please consider the following:
+
+*   **Reporting Bugs:** If you find a bug, please open an issue in the project's issue tracker (if available). Include steps to reproduce the bug, expected behavior, and actual behavior.
+*   **Suggesting Enhancements:** If you have ideas for new features or improvements, feel free to open an issue to discuss them.
+*   **Pull Requests:**
+    1.  Fork the repository (if applicable).
+    2.  Create a new branch for your feature or bug fix (`git checkout -b feature/your-feature-name` or `bugfix/your-bug-fix`).
+    3.  Make your changes and commit them with clear, descriptive messages.
+    4.  Ensure your code adheres to the project's coding standards (e.g., run linters like `flake8` and formatters like `black`).
+    5.  Write or update tests for your changes.
+    6.  Push your branch and open a pull request.
+
+Please note that this project is currently maintained by a small team, so response times may vary.
 
 ## License
 
-(Placeholder for license information)
+MIT License
+
+Copyright (c) [Year] [Your Name or Organization Name]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
