@@ -1,4 +1,4 @@
-# Study Guide Generator
+# Study Context
 
 ## Overview
 
