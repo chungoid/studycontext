@@ -36,50 +36,46 @@ def format_plain_text_output(all_segments_data: List[ProcessedSegmentData]) -> s
 
     output_lines.append("STUDY GUIDE")
     output_lines.append("=" * 40)
-    output_lines.append("\n")
+    output_lines.append("")
 
     for i, segment_data in enumerate(all_segments_data):
         output_lines.append(f"--- SEGMENT {i + 1} ---")
-        output_lines.append("\n")
+        output_lines.append("")
 
         key_concepts = segment_data.get("key_concepts")
-        if key_concepts:
+        if key_concepts is not None:
             output_lines.append("Key Concepts & Definitions:")
             output_lines.append("-" * 30)
-            output_lines.append(
-                key_concepts.strip()
-            )  # Assuming LLM output is already formatted
-            output_lines.append("\n")
+            output_lines.append(key_concepts.strip())
+            output_lines.append("")
         else:
             output_lines.append(
                 "Key Concepts & Definitions: Not generated for this segment."
             )
-            output_lines.append("\n")
+            output_lines.append("")
 
         qa_pairs = segment_data.get("qa_pairs")
-        if qa_pairs:
+        if qa_pairs is not None:
             output_lines.append("Practice Questions & Answers:")
             output_lines.append("-" * 30)
-            output_lines.append(
-                qa_pairs.strip()
-            )  # Assuming LLM output is already formatted
-            output_lines.append("\n")
+            output_lines.append(qa_pairs.strip())
+            output_lines.append("")
         else:
             output_lines.append(
                 "Practice Questions & Answers: Not generated for this segment."
             )
-            output_lines.append("\n")
+            output_lines.append("")
 
         # Placeholder for other content types (Examples, Insights) as they are added
         # instructor_insights = segment_data.get("instructor_insights")
-        # if instructor_insights:
+        # if instructor_insights is not None:
         #     output_lines.append("Instructor Insights:")
         #     output_lines.append("-" * 30)
         #     output_lines.append(instructor_insights.strip())
-        #     output_lines.append("\n")
+        #     output_lines.append("")
 
         output_lines.append("=" * 40)
-        output_lines.append("\n")
+        output_lines.append("")
 
     formatted_text = "\n".join(output_lines)
     logger.info(

@@ -1,4 +1,3 @@
-import pytest
 from src.output_formatter.formatter import (
     format_plain_text_output,
     ProcessedSegmentData,

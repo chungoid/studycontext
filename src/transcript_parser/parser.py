@@ -46,46 +46,67 @@ def clean_transcript_text(text: str) -> str:
     """
     logger.info(f"Starting transcript cleaning. Original length: {len(text)}")
 
-    # Define common filler words (case-insensitive removal)
-    # As per PRD (Feature 4.1, AC3): "uh", "um", "like", "you know", "so"
     filler_words = ["uh", "um", "like", "you know", "so"]
-
     cleaned_text = text
-    for word_to_remove in filler_words:
-        # Build a regex pattern that matches the word, case-insensitively,
-        # and handles various spacing/punctuation scenarios around it.
-        # This is complex. A simpler start is to ensure spaces are handled.
 
-        # Pattern 1: Space + Word + Space -> replace with single space
-        pattern1 = r"\s+" + re.escape(word_to_remove) + r"\s+"
-        cleaned_text = re.sub(pattern1, " ", cleaned_text, flags=re.IGNORECASE)
-
-        # Pattern 2: Start of string + Word + Space -> replace with empty string (handled by strip later or more specific regex)
-        pattern2_start = r"^" + re.escape(word_to_remove) + r"\s+"
-        cleaned_text = re.sub(pattern2_start, "", cleaned_text, flags=re.IGNORECASE)
-
-        # Pattern 3: Space + Word + End of string -> replace with empty string (handled by strip later or more specific regex)
-        pattern3_end = r"\s+" + re.escape(word_to_remove) + r"$"
-        cleaned_text = re.sub(pattern3_end, "", cleaned_text, flags=re.IGNORECASE)
-
-        # Pattern 4: Start of string + Word + End of string (word is the whole text)
-        pattern4_whole = r"^" + re.escape(word_to_remove) + r"$"
-        cleaned_text = re.sub(pattern4_whole, "", cleaned_text, flags=re.IGNORECASE)
-
-    # Normalize multiple whitespaces (including newlines, tabs) to a single space
+    # Initial normalization of all whitespace to single spaces
     cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip()
 
-    # Attempt to clean up orphaned commas or commas with spaces before them due to filler word removal.
-    # This is a heuristic and might need refinement.
-    # Example: "word , other" -> "word, other"
-    cleaned_text = re.sub(r"\s+,\s*", ", ", cleaned_text)
-    # Example: "word,  other" -> "word, other" (already handled by \s+ normalize but good to be sure)
-    # Example: if a sentence starts with ", " after cleaning, strip it.
+    # Remove filler words
+    for word_to_remove in filler_words:
+        pattern = r"\b" + re.escape(word_to_remove) + r"\b"
+        cleaned_text = re.sub(pattern, "", cleaned_text, flags=re.IGNORECASE)
+
+    # Collapse multiple spaces that may have resulted from removal, and strip
+    cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip()
+
+    # Handle ellipses: replace " . . . " or similar forms with a single "..."
+    # This is to counteract the effect of previous rules that might space out dots.
+    # And ensure "..." is treated as a single token for spacing later.
+    cleaned_text = re.sub(r"\s*\.\s*\.\s*\.\s*", " ... ", cleaned_text)
+
+    # Add a single space after major punctuation (. , ! ?) if not already there and not EOL
+    # And ensure no space before them.
+    # Step 1: Remove spaces before these punctuation marks.
+    cleaned_text = re.sub(r"\s+([,.!?])", r"\1", cleaned_text)
+    # Step 2: Ensure one space after, unless it's end of string or followed by another space.
+    cleaned_text = re.sub(r"([,.!?])(?!$| \s|[,.!?])", r"\1 ", cleaned_text)
+
+    # Collapse multiple commas (e.g., ", , ," or ", ,") into a single comma followed by a space
+    cleaned_text = re.sub(r"(,\s*)+", ", ", cleaned_text)
+    
+    # Collapse multiple periods if they are not part of an ellipsis
+    # e.g. "word. . another" -> "word. another"
+    # This is a bit more complex; for now, we assume ellipsis handling is primary.
+
+    # Normalize spaces again after punctuation adjustments
+    cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip()
+
+    # Remove leading punctuation (comma) if followed by a space, or just the comma if no space
     if cleaned_text.startswith(", "):
         cleaned_text = cleaned_text[2:]
-    # Remove trailing commas if they are left hanging
-    cleaned_text = cleaned_text.strip().removesuffix(",")
-    cleaned_text = cleaned_text.strip()  # Final strip
+    elif cleaned_text.startswith(","):
+        cleaned_text = cleaned_text[1:].strip()
+
+    # If, after filler removal, string starts with "...", remove it.
+    # This is based on "UM, So, LIKE... very loud fillers!" -> "very loud fillers!" test
+    if cleaned_text.startswith("... "):
+        cleaned_text = cleaned_text[4:]
+    elif cleaned_text.startswith("..."): # If no space after leading "..."
+        cleaned_text = cleaned_text[3:].strip()
+
+    # Remove trailing comma
+    if cleaned_text.endswith(","):
+        cleaned_text = cleaned_text[:-1].strip()
+    
+    # Remove trailing ellipsis if it is left hanging (e.g. "text ...")
+    if cleaned_text.endswith(" ..."):
+        cleaned_text = cleaned_text[:-4].strip() # Remove " ..."
+    elif cleaned_text.endswith("..."):
+        cleaned_text = cleaned_text[:-3].strip()
+
+    # Final whitespace cleanup
+    cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip()
 
     logger.info(f"Cleaning complete. Cleaned length: {len(cleaned_text)}")
     return cleaned_text

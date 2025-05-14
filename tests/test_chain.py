@@ -4,6 +4,7 @@ import os
 from src.llm_chain import chain  # Use this to allow monkeypatching chain._openai_client
 from openai import APIError, RateLimitError
 import time  # Import the time module
+import httpx
 
 
 # Fixture to set and unset the API key for tests
@@ -127,8 +128,14 @@ def test_call_llm_retry_on_ratelimiterror_then_success(mock_openai_client, monke
     # Simulate failure then success
     mock_openai_client.chat.completions.create.side_effect = [
         RateLimitError(
-            "Simulated Rate Limit", request=MagicMock()
-        ),  # Removed response and body, added dummy request
+            "Simulated Rate Limit",
+            response=MagicMock(
+                spec=httpx.Response,
+                status_code=429,
+                headers=MagicMock(spec=httpx.Headers)
+            ),
+            body=None
+        ),
         create_mock_chat_completion_response(mock_response_content),
     ]
 
@@ -145,8 +152,7 @@ def test_call_llm_failure_after_max_retries(mock_openai_client, monkeypatch):
     """Test call_llm returns None after exhausting retries."""
     # Simulate persistent failure
     mock_openai_client.chat.completions.create.side_effect = APIError(
-        "Persistent API Error",
-        request=MagicMock(),  # Removed response and body, added dummy request
+        "Persistent API Error", request=MagicMock(spec=httpx.Request), body=None
     )
     monkeypatch.setattr(time, "sleep", lambda seconds: None)
 
