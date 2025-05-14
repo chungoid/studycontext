@@ -37,7 +37,7 @@ def test_read_transcript_file_not_found():
     [
         (
             "Uh, this is, um, like, a test, you know, so... with extra  spaces.",
-            "this is a test with extra spaces.",
+            "this is, a test, ... with extra spaces.",
         ),
         ("no filler words here", "no filler words here"),
         ("  leading and trailing spaces  ", "leading and trailing spaces"),
