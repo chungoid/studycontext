@@ -126,7 +126,9 @@ def test_call_llm_retry_on_ratelimiterror_then_success(mock_openai_client, monke
     mock_response_content = "Success after retry!"
     # Simulate failure then success
     mock_openai_client.chat.completions.create.side_effect = [
-        RateLimitError("Simulated Rate Limit", request=MagicMock()), # Removed response and body, added dummy request
+        RateLimitError(
+            "Simulated Rate Limit", request=MagicMock()
+        ),  # Removed response and body, added dummy request
         create_mock_chat_completion_response(mock_response_content),
     ]
 
@@ -143,7 +145,8 @@ def test_call_llm_failure_after_max_retries(mock_openai_client, monkeypatch):
     """Test call_llm returns None after exhausting retries."""
     # Simulate persistent failure
     mock_openai_client.chat.completions.create.side_effect = APIError(
-        "Persistent API Error", request=MagicMock() # Removed response and body, added dummy request
+        "Persistent API Error",
+        request=MagicMock(),  # Removed response and body, added dummy request
     )
     monkeypatch.setattr(time, "sleep", lambda seconds: None)
 
@@ -178,11 +181,15 @@ def test_extract_key_concepts_uses_correct_prompt(
     monkeypatch.setattr(chain, "PROMPT_DIR", PROMPT_TEST_DIR)
     # Keep the original _load_prompt_template to ensure the formatting logic in extract_key_concepts is tested
     original_load_prompt_template = chain._load_prompt_template
+
     def mock_load_template(template_name):
         if template_name == "extract_concepts_prompt.txt":
             # Return a simple template string for testing formatting
             return "Key concept prompt: {text_segment}"
-        return original_load_prompt_template(template_name) # Fallback for other prompts if any
+        return original_load_prompt_template(
+            template_name
+        )  # Fallback for other prompts if any
+
     monkeypatch.setattr(chain, "_load_prompt_template", mock_load_template)
 
     expected_response = "Mocked key concepts"
@@ -204,10 +211,12 @@ def test_generate_qa_pairs_uses_correct_prompt(
 ):
     monkeypatch.setattr(chain, "PROMPT_DIR", PROMPT_TEST_DIR)
     original_load_prompt_template = chain._load_prompt_template
+
     def mock_load_template(template_name):
         if template_name == "generate_qa_prompt.txt":
             return "Q&A prompt: {text_segment}"
         return original_load_prompt_template(template_name)
+
     monkeypatch.setattr(chain, "_load_prompt_template", mock_load_template)
 
     expected_response = "Mocked Q&A pairs"

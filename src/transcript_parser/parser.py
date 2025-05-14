@@ -55,11 +55,11 @@ def clean_transcript_text(text: str) -> str:
         # Build a regex pattern that matches the word, case-insensitively,
         # and handles various spacing/punctuation scenarios around it.
         # This is complex. A simpler start is to ensure spaces are handled.
-        
+
         # Pattern 1: Space + Word + Space -> replace with single space
         pattern1 = r"\s+" + re.escape(word_to_remove) + r"\s+"
         cleaned_text = re.sub(pattern1, " ", cleaned_text, flags=re.IGNORECASE)
-        
+
         # Pattern 2: Start of string + Word + Space -> replace with empty string (handled by strip later or more specific regex)
         pattern2_start = r"^" + re.escape(word_to_remove) + r"\s+"
         cleaned_text = re.sub(pattern2_start, "", cleaned_text, flags=re.IGNORECASE)
@@ -67,25 +67,25 @@ def clean_transcript_text(text: str) -> str:
         # Pattern 3: Space + Word + End of string -> replace with empty string (handled by strip later or more specific regex)
         pattern3_end = r"\s+" + re.escape(word_to_remove) + r"$"
         cleaned_text = re.sub(pattern3_end, "", cleaned_text, flags=re.IGNORECASE)
-        
+
         # Pattern 4: Start of string + Word + End of string (word is the whole text)
         pattern4_whole = r"^" + re.escape(word_to_remove) + r"$"
         cleaned_text = re.sub(pattern4_whole, "", cleaned_text, flags=re.IGNORECASE)
 
     # Normalize multiple whitespaces (including newlines, tabs) to a single space
     cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip()
-    
+
     # Attempt to clean up orphaned commas or commas with spaces before them due to filler word removal.
     # This is a heuristic and might need refinement.
     # Example: "word , other" -> "word, other"
-    cleaned_text = re.sub(r"\s+,\s*", ", ", cleaned_text) 
+    cleaned_text = re.sub(r"\s+,\s*", ", ", cleaned_text)
     # Example: "word,  other" -> "word, other" (already handled by \s+ normalize but good to be sure)
     # Example: if a sentence starts with ", " after cleaning, strip it.
     if cleaned_text.startswith(", "):
         cleaned_text = cleaned_text[2:]
     # Remove trailing commas if they are left hanging
     cleaned_text = cleaned_text.strip().removesuffix(",")
-    cleaned_text = cleaned_text.strip() # Final strip
+    cleaned_text = cleaned_text.strip()  # Final strip
 
     logger.info(f"Cleaning complete. Cleaned length: {len(cleaned_text)}")
     return cleaned_text
