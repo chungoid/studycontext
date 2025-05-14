@@ -117,7 +117,7 @@ def test_call_llm_success(mock_openai_client):
     mock_openai_client.chat.completions.create.assert_called_once()
     # Further assertions can be made on the call arguments to create
     call_args = mock_openai_client.chat.completions.create.call_args
-    assert call_args[1]["model"] == "gpt-3.5-turbo"  # Default model
+    assert call_args[1]["model"] == "gpt-4o"  # Updated to gpt-4o
     assert call_args[1]["messages"][0]["content"] == "A simple prompt"
 
 
@@ -126,7 +126,7 @@ def test_call_llm_retry_on_ratelimiterror_then_success(mock_openai_client, monke
     mock_response_content = "Success after retry!"
     # Simulate failure then success
     mock_openai_client.chat.completions.create.side_effect = [
-        RateLimitError("Simulated Rate Limit", response=MagicMock(), body=None),
+        RateLimitError("Simulated Rate Limit", request=MagicMock()), # Removed response and body, added dummy request
         create_mock_chat_completion_response(mock_response_content),
     ]
 
@@ -143,7 +143,7 @@ def test_call_llm_failure_after_max_retries(mock_openai_client, monkeypatch):
     """Test call_llm returns None after exhausting retries."""
     # Simulate persistent failure
     mock_openai_client.chat.completions.create.side_effect = APIError(
-        "Persistent API Error", response=MagicMock(), body=None
+        "Persistent API Error", request=MagicMock() # Removed response and body, added dummy request
     )
     monkeypatch.setattr(time, "sleep", lambda seconds: None)
 
@@ -176,16 +176,14 @@ def test_extract_key_concepts_uses_correct_prompt(
     mock_call_llm, monkeypatch, create_test_prompt_files
 ):
     monkeypatch.setattr(chain, "PROMPT_DIR", PROMPT_TEST_DIR)
-    # Make our test prompt the one for extract_concepts for this test
-    monkeypatch.setattr(
-        chain,
-        "_load_prompt_template",
-        lambda name: (
-            "Key concept prompt: {{text_segment}}"
-            if name == "extract_concepts_prompt.txt"
-            else ""
-        ),
-    )
+    # Keep the original _load_prompt_template to ensure the formatting logic in extract_key_concepts is tested
+    original_load_prompt_template = chain._load_prompt_template
+    def mock_load_template(template_name):
+        if template_name == "extract_concepts_prompt.txt":
+            # Return a simple template string for testing formatting
+            return "Key concept prompt: {text_segment}"
+        return original_load_prompt_template(template_name) # Fallback for other prompts if any
+    monkeypatch.setattr(chain, "_load_prompt_template", mock_load_template)
 
     expected_response = "Mocked key concepts"
     mock_call_llm.return_value = expected_response
@@ -196,7 +194,8 @@ def test_extract_key_concepts_uses_correct_prompt(
     assert result == expected_response
     mock_call_llm.assert_called_once()
     called_prompt = mock_call_llm.call_args[0][0]
-    assert "Key concept prompt: This is a test segment for concepts." == called_prompt
+    # Now assert that the prompt passed to call_llm is the formatted one
+    assert called_prompt == "Key concept prompt: This is a test segment for concepts."
 
 
 @patch("src.llm_chain.chain.call_llm")
@@ -204,13 +203,12 @@ def test_generate_qa_pairs_uses_correct_prompt(
     mock_call_llm, monkeypatch, create_test_prompt_files
 ):
     monkeypatch.setattr(chain, "PROMPT_DIR", PROMPT_TEST_DIR)
-    monkeypatch.setattr(
-        chain,
-        "_load_prompt_template",
-        lambda name: (
-            "Q&A prompt: {{text_segment}}" if name == "generate_qa_prompt.txt" else ""
-        ),
-    )
+    original_load_prompt_template = chain._load_prompt_template
+    def mock_load_template(template_name):
+        if template_name == "generate_qa_prompt.txt":
+            return "Q&A prompt: {text_segment}"
+        return original_load_prompt_template(template_name)
+    monkeypatch.setattr(chain, "_load_prompt_template", mock_load_template)
 
     expected_response = "Mocked Q&A pairs"
     mock_call_llm.return_value = expected_response
@@ -221,7 +219,7 @@ def test_generate_qa_pairs_uses_correct_prompt(
     assert result == expected_response
     mock_call_llm.assert_called_once()
     called_prompt = mock_call_llm.call_args[0][0]
-    assert "Q&A prompt: This is a test segment for Q&A." == called_prompt
+    assert called_prompt == "Q&A prompt: This is a test segment for Q&A."
 
 
 def test_extract_key_concepts_handles_call_llm_failure(
